@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# اگر فایل یا دایرکتوری وجود داشت، مستقیم سرو کن
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# همه درخواست‌ها رو به index.php بفرست
+RewriteRule ^ index.php [QSA,L]

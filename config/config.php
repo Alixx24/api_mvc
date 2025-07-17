@@ -1,8 +1,10 @@
 <?php
-
 return [
-    'db_host' => 'localhost',
-    'db_name' => 'api_mvc',
-    'db_user' => 'root',
-    'db_pass' => ''
+    'db' => [
+        'host' => 'localhost',
+        'dbname' => 'api_mvc',
+        'username' => 'root',
+        'password' => '',
+    ],
+    // تنظیمات دیگر اگر لازم بود
 ];

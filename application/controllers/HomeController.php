@@ -1,9 +1,8 @@
 <?php
 namespace App\Controllers;
 
-namespace Application\Core;
+use Application\Core\Controller;
 use Application\Core\Database;
-
 use Application\Model\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -71,6 +70,9 @@ class HomeController extends Controller
     // متد تستی برای چک کردن توکن و دسترسی
     public function profile()
     {
+
+        var_dump(12);
+        die;
         $headers = getallheaders();
         if (!isset($headers['Authorization'])) {
             $this->jsonResponse(['error' => 'Authorization header required'], 401);
