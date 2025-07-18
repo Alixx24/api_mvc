@@ -1,22 +1,20 @@
 <?php
+
 namespace Application\Core;
 
 class Router
 {
     private $routes = [];
 
-    // ثبت یک route
     public function add(string $method, string $path, callable $handler): void
     {
         $method = strtoupper($method);
         $this->routes[$method][$path] = $handler;
     }
 
-    // اجرای روت
     public function dispatch(string $method, string $path): void
     {
         $method = strtoupper($method);
-
         if (isset($this->routes[$method][$path])) {
             $handler = $this->routes[$method][$path];
             call_user_func($handler);
