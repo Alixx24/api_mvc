@@ -10,35 +10,46 @@ use Firebase\JWT\Key;
 class HomeController extends Controller
 {
     private $userModel;
-    private $jwt_secret = 'your-secret-key'; // حتما این کلید رو در config ذخیره کن و پیچیده باشه
+    private $jwt_secret; 
 
     public function __construct()
     {
         $config = require __DIR__ . '/../../config/config.php';
         $database = Database::getInstance($config['db']);
         $this->userModel = new User($database);
+        $this->jwt_secret = $config['jwt_secret'];
     }
 
-    public function register()
+  public function register()
+{
+    $input = json_decode(file_get_contents('php://input'), true);
+   
+    // var_dump($input);
+    // die;
+
+    if (empty($input['username']) || empty($input['email']) || empty($input['password'])) {
+        $this->jsonResponse(['error' => 'Username, email and password are required'], 400);
+        return; 
+    }
+
+    if ($this->userModel->findByUsername($input['username'])) {
+        $this->jsonResponse(['error' => 'Username already exists'], 409);
+        return;
+    }
+
+    if($this->userModel->findByEmail($input['email'])) 
     {
-        $input = json_decode(file_get_contents('php://input'), true);
-
-        if (empty($input['username']) || empty($input['password'])) {
-            $this->jsonResponse(['error' => 'Username and password are required'], 400);
-        }
-
-        if ($this->userModel->findByUsername($input['username'])) {
-            $this->jsonResponse(['error' => 'Username already exists'], 409);
-        }
-
-        $passwordHashed = password_hash($input['password'], PASSWORD_DEFAULT);
-
-        if ($this->userModel->create($input['username'], $passwordHashed)) {
-            $this->jsonResponse(['message' => 'User registered successfully']);
-        } else {
-            $this->jsonResponse(['error' => 'Registration failed'], 500);
-        }
+        $this->jsonResponse(['error' => 'Email already exists'], 409);
+        return;
     }
+   
+    if ($this->userModel->create($input)) {
+        $this->jsonResponse(['message' => 'User registered successfully']);
+    } else {
+        $this->jsonResponse(['error' => 'Registration failed'], 500);
+    }
+}
+
 
     public function login()
     {
@@ -67,11 +78,11 @@ class HomeController extends Controller
         $this->jsonResponse(['token' => $jwt]);
     }
 
-    // متد تستی برای چک کردن توکن و دسترسی
+
     public function profile()
     {
 
-        var_dump(12);
+        var_dump($this->jwt_secret);
         die;
         $headers = getallheaders();
         if (!isset($headers['Authorization'])) {

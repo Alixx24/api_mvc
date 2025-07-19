@@ -36,6 +36,26 @@ class User extends Model
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
         ]);
     }
+    public function create(array $data)
+    {
+        if (
+            !isset($data['username']) || empty($data['username']) ||
+            !isset($data['email']) || empty($data['email']) ||
+            !isset($data['password']) || empty($data['password'])
+        ) {
+            throw new \InvalidArgumentException('All fields are required');
+        }
+
+        $sql = "INSERT INTO {$this->table} (username, email, password) 
+            VALUES (:username, :email, :password)";
+
+        // رمز عبور اینجا هش می‌شود (فقط یک بار)
+        return $this->execute($sql, [
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+        ]);
+    }
 
     // به‌روزرسانی اطلاعات کاربر
     public function updateUser($id, $data)
@@ -51,6 +71,8 @@ class User extends Model
         ]);
     }
 
+
+
     // حذف کاربر
     public function deleteUser($id)
     {
@@ -65,6 +87,11 @@ class User extends Model
         return $this->query($sql, ['username' => $username])->fetch(\PDO::FETCH_ASSOC);
     }
 
+    public function findByEmail($email)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE email = :email LIMIT 1";
+        return $this->query($sql, ['email' => $email])->fetch(\PDO::FETCH_ASSOC);
+    }
     // چک کردن وجود ایمیل
     public function existsByEmail($email)
     {
