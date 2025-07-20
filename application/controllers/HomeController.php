@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use Application\Core\Controller;
@@ -10,7 +11,7 @@ use Firebase\JWT\Key;
 class HomeController extends Controller
 {
     private $userModel;
-    private $jwt_secret; 
+    private $jwt_secret;
 
     public function __construct()
     {
@@ -20,35 +21,34 @@ class HomeController extends Controller
         $this->jwt_secret = $config['jwt_secret'];
     }
 
-  public function register()
-{
-    $input = json_decode(file_get_contents('php://input'), true);
-   
-    // var_dump($input);
-    // die;
-
-    if (empty($input['username']) || empty($input['email']) || empty($input['password'])) {
-        $this->jsonResponse(['error' => 'Username, email and password are required'], 400);
-        return; 
-    }
-
-    if ($this->userModel->findByUsername($input['username'])) {
-        $this->jsonResponse(['error' => 'Username already exists'], 409);
-        return;
-    }
-
-    if($this->userModel->findByEmail($input['email'])) 
+    public function register()
     {
-        $this->jsonResponse(['error' => 'Email already exists'], 409);
-        return;
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        // var_dump($input);
+        // die;
+
+        if (empty($input['username']) || empty($input['email']) || empty($input['password'])) {
+            $this->jsonResponse(['error' => 'Username, email and password are required'], 400);
+            return;
+        }
+
+        if ($this->userModel->findByUsername($input['username'])) {
+            $this->jsonResponse(['error' => 'Username already exists'], 409);
+            return;
+        }
+
+        if ($this->userModel->findByEmail($input['email'])) {
+            $this->jsonResponse(['error' => 'Email already exists'], 409);
+            return;
+        }
+
+        if ($this->userModel->create($input)) {
+            $this->jsonResponse(['message' => 'User registered successfully']);
+        } else {
+            $this->jsonResponse(['error' => 'Registration failed'], 500);
+        }
     }
-   
-    if ($this->userModel->create($input)) {
-        $this->jsonResponse(['message' => 'User registered successfully']);
-    } else {
-        $this->jsonResponse(['error' => 'Registration failed'], 500);
-    }
-}
 
 
     public function login()
@@ -79,11 +79,9 @@ class HomeController extends Controller
     }
 
 
+
     public function profile()
     {
-
-        var_dump($this->jwt_secret);
-        die;
         $headers = getallheaders();
         if (!isset($headers['Authorization'])) {
             $this->jsonResponse(['error' => 'Authorization header required'], 401);
@@ -93,7 +91,7 @@ class HomeController extends Controller
         list($type, $token) = explode(" ", $authHeader);
 
         if ($type !== 'Bearer' || !$token) {
-            $this->jsonResponse(['error' => 'Invalid Authorization header format'], 401);
+            $this->jsonResponse(['error' => 'Invalid Authorization format'], 401);
         }
 
         try {
@@ -112,7 +110,6 @@ class HomeController extends Controller
                 'username' => $user['username'],
                 'created_at' => $user['created_at']
             ]);
-
         } catch (\Exception $e) {
             $this->jsonResponse(['error' => 'Invalid or expired token'], 401);
         }

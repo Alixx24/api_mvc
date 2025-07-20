@@ -8,6 +8,7 @@ require_once __DIR__ . '/core/Router.php';
 require_once __DIR__ . '/application/models/Model.php';
 require_once __DIR__ . '/application/models/User.php';
 require_once __DIR__ . '/application/controllers/HomeController.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Application\Core\Database;
 use Application\Core\Router;
