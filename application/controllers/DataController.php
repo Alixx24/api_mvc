@@ -100,4 +100,88 @@ class DataController extends Controller
     ]);
 }
 
+public function getPostsSimple()
+{
+    $url = "https://jsonplaceholder.typicode.com/posts";
+
+    $options = [
+        "http" => [
+            "method" => "GET",
+            "header" => "Accept: application/json\r\n",
+            "timeout" => 5
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = @file_get_contents($url, false, $context);
+
+    header('Content-Type: application/json');
+
+    if ($response === false) {
+        echo json_encode([
+            'error' => true,
+            'message' => 'خطا در دریافت داده‌ها',
+        ]);
+        return;
+    }
+
+    $data = json_decode($response, true);
+
+    $posts = array_slice($data, 0, 2);
+
+    echo json_encode([
+        'error' => false,
+        'data' => $posts,
+    ]);
+}
+
+
+public function searchPostsSimple()
+{
+    $url = "https://jsonplaceholder.typicode.com/posts";
+
+  
+    $searchTerm = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : null;
+
+    $options = [
+        "http" => [
+            "method" => "GET",
+            "header" => "Accept: application/json\r\n",
+            "timeout" => 5
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = @file_get_contents($url, false, $context);
+
+    header('Content-Type: application/json');
+
+    if ($response === false) {
+        http_response_code(500);
+        echo json_encode([
+            'error' => true,
+            'message' => 'خطا در دریافت داده‌ها',
+            'data' => []
+        ]);
+        return;
+    }
+
+    $data = json_decode($response, true);
+
+    if ($searchTerm) {
+        $data = array_filter($data, function ($post) use ($searchTerm) {
+            return strpos(strtolower($post['title']), $searchTerm) !== false ||
+                   strpos(strtolower($post['body']), $searchTerm) !== false;
+        });
+        $data = array_values($data);
+    }
+
+    echo json_encode([
+        'error' => false,
+        'data' => array_slice($data, 0, 10),
+    ]);
+}
+
+
+
 }
