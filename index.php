@@ -41,6 +41,19 @@ $router->add('GET', '/search', [$dataController, 'searchData']);
 $router->add('GET', '/show', [$dataController, 'showPosts']);
 
 
+//auth
+$router->add('GET', '/register-form', [$controller, 'registerForm']);
+$router->add('POST', '/registerPostView', [$controller, 'registerPostView']);
+
+$router->add('GET', '/login-form', [$controller, 'loginForm']);
+$router->add('POST', '/loginPost', [$controller, 'loginPostView']);
+$router->add('GET', '/postsPanelView', [$controller, 'postsPanel']);
+
+
+
+//panel
+$router->add('GET', '/panel/show', [$dataController, 'showPostsPanel']);
+
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];

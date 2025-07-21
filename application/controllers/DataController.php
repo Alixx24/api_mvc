@@ -197,4 +197,17 @@ public function searchPostsSimple()
        
 require_once __DIR__ . '/../views/postsView.php';
     }
+
+     public function showPostsPanel()
+    {
+        $url = "https://jsonplaceholder.typicode.com/posts";
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
+
+        
+        $posts = array_slice($data, 0, 3);
+
+       
+require_once __DIR__ . '/../views/psanel/postsView.php';
+    }
 }

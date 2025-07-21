@@ -114,4 +114,88 @@ class HomeController extends Controller
             $this->jsonResponse(['error' => 'Invalid or expired token'], 401);
         }
     }
+
+    //view
+      public function registerForm()
+    {
+       require_once __DIR__ . '/../views/panel/posts-view.php';
+       
+    }
+
+    public function registerPostView()
+{
+    var_dump(123);
+    $input = $_POST;
+
+    if (empty($input['username']) || empty($input['email']) || empty($input['password'])) {
+        $this->jsonResponse(['error' => 'Username, email and password are required'], 400);
+        return;
+    }
+
+    if ($this->userModel->findByUsername($input['username'])) {
+        $this->jsonResponse(['error' => 'Username already exists'], 409);
+        return;
+    }
+
+    if ($this->userModel->findByEmail($input['email'])) {
+        $this->jsonResponse(['error' => 'Email already exists'], 409);
+        return;
+    }
+
+    if ($this->userModel->create($input)) {
+        // می‌تونی اینجا به صفحه دیگری ریدایرکت کنی یا پیام موفقیت نمایش بدی
+        header("Location: /your-controller/successPage");
+        exit;
+    } else {
+        $this->jsonResponse(['error' => 'Registration failed'], 500);
+    }
+}
+
+//login view
+
+
+    public function loginForm()
+{
+    require_once __DIR__ . '/../views/panel/login-form.php';
+}
+
+public function loginPostView()
+{
+    
+    $input = $_POST;
+
+    if (empty($input['username']) || empty($input['password'])) {
+        $this->jsonResponse(['error' => 'Username and password are required'], 400);
+        return;
+    }
+
+    $user = $this->userModel->findByUsername($input['username']);
+
+    if (!$user) {
+        $this->jsonResponse(['error' => 'User not found'], 404);
+        return;
+    }
+
+    if (password_verify($input['password'], $user['password'])) {
+    
+               session_start();
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+
+     
+        header("Location: /your-controller/dashboard");
+        exit;
+    } else {
+        $this->jsonResponse(['error' => 'Invalid password'], 401);
+        return;
+    }
+}
+
+    public function postsPanel()
+{
+    require_once __DIR__ . '/../views/panel/posts.php';
+}
+
+
 }
