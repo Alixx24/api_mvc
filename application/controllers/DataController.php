@@ -49,4 +49,55 @@ class DataController extends Controller
 
         // die;
     }
+
+  public function searchData()
+{
+   
+    $url = "https://jsonplaceholder.typicode.com/posts";
+
+    // مقدار search رو از query string می‌گیریم
+    $searchTerm = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : null;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+
+    curl_close($ch);
+
+    header('Content-Type: application/json');
+
+    if ($response === false || $httpCode !== 200) {
+        http_response_code(500);
+        echo json_encode([
+           'error' => true,
+        'message' => 'پارامتر search ارسال نشده است.',
+        'data' => []
+        ]);
+        return;
+    }
+
+    $data = json_decode($response, true);
+
+    // اگر search وارد شده بود، فیلتر کن
+    if ($searchTerm) {
+        $data = array_filter($data, function ($post) use ($searchTerm) {
+            return strpos(strtolower($post['title']), $searchTerm) !== false ||
+                   strpos(strtolower($post['body']), $searchTerm) !== false;
+        });
+
+        // اندیس‌های آرایه رو دوباره مرتب می‌کنیم
+        $data = array_values($data);
+    }
+
+    echo json_encode([
+        'error' => false,
+        'data' => array_slice($data, 0, 10), // فقط ۱۰ مورد اول برای بهینه بودن
+    ]);
+}
+
 }

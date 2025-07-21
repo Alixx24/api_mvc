@@ -37,6 +37,8 @@ $router->add('GET', '/profile', [$controller, 'profile']);
 
 //data
 $router->add('GET', '/data', [$dataController, 'fetchData']);
+$router->add('GET', '/search', [$dataController, 'searchData']);
+
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
