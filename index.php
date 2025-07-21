@@ -38,6 +38,8 @@ $router->add('GET', '/profile', [$controller, 'profile']);
 //data
 $router->add('GET', '/data', [$dataController, 'fetchData']);
 $router->add('GET', '/search', [$dataController, 'searchData']);
+$router->add('GET', '/show', [$dataController, 'showPosts']);
+
 
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
