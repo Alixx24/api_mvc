@@ -39,6 +39,7 @@ $router->add('GET', '/profile', [$controller, 'profile']);
 $router->add('GET', '/data', [$dataController, 'fetchData']);
 $router->add('GET', '/search', [$dataController, 'searchData']);
 $router->add('GET', '/show', [$dataController, 'showPosts']);
+$router->add('GET', '/posts', [$dataController, 'fetchAllPosts']);
 
 
 //auth
@@ -55,19 +56,20 @@ $router->add('GET', '/postsPanelView', [$controller, 'postsPanel']);
 $router->add('GET', '/panel/show', [$dataController, 'showPostsPanel']);
 
 
+
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-
-$basePath = '/mvc-api';
+$basePath = '/api_mvc';
 if (strpos($uri, $basePath) === 0) {
     $uri = substr($uri, strlen($basePath));
 }
 
 
+
+$uri = rtrim($uri, '/');
 if ($uri === '') {
     $uri = '/';
 }
-
 
 $router->dispatch($method, $uri);
